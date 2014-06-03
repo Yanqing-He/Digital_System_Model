@@ -1,0 +1,243 @@
+/*
+ * main.cpp
+ *
+ *  Created on: 2013-11-14
+ *      Author: hyq
+ */
+
+#include "bc_collect.h"
+#include "prc_collect.h"
+#include "exec_ctrl.h"
+
+int sc_main(int argc, char* argv[])
+{
+	// interconnect test
+/*	sc_clock clk("clk", 10, SC_NS);
+	sc_signal<sc_uint<7> > addr;
+	sc_signal<sc_uint<6> > regIn;
+	sc_signal<sc_uint<8> > *dataIn[20], *dataOut[20];
+
+	IntCnnt intcnnt1("interconnect1");
+	intcnnt1.clk(clk);
+	intcnnt1.addrIn(addr);
+	intcnnt1.regIn(regIn);
+	for(int i = 0; i < 20; i++)
+	{
+		dataIn[i] = new sc_signal<sc_uint<8> >;
+		dataOut[i] = new sc_signal<sc_uint<8> >;
+		if(i < 10)
+		{
+			(*(intcnnt1.inputDataLeft[i]))(*dataIn[i]);
+			(*(intcnnt1.outputDataLeft[i]))(*dataOut[i]);
+		}
+		else
+		{
+			(*(intcnnt1.inputDataRight[i - 10]))(*dataIn[i]);
+			(*(intcnnt1.outputDataRight[i - 10]))(*dataOut[i]);
+		}
+	}
+
+
+	sc_trace_file *fp;
+	fp = sc_create_vcd_trace_file("/home/hyq/workspace/501_proj_2/interconnect.vcd");
+	sc_trace(fp, clk, "clock");
+	sc_trace(fp, addr, "address");
+	sc_trace(fp, regIn, "reg");
+	sc_trace(fp, *dataIn[0], "input");
+	sc_trace(fp, *dataOut[3], "output");
+	sc_trace(fp, *dataOut[2], "no_output");
+
+
+	addr.write(11);
+	regIn.write(3);
+	sc_start(15, SC_NS);
+	regIn.write(0);
+	sc_start(400, SC_NS);
+	(*dataIn[0]).write(10);
+	sc_start(205, SC_NS);
+	(*dataIn[0]).write(8);
+	sc_start(200, SC_NS);*/
+
+	// structure controller test
+/*
+	sc_clock clk("clock", 10, SC_NS);
+	sc_signal<bool> reconfig;
+	sc_signal<sc_uint<3> > branchAddrIn;
+	sc_signal<bool> ready;
+	sc_signal<sc_uint<7> > regAddr;
+	sc_signal<sc_uint<6> > regData;
+
+	StrctCtrl controller("struct_ctrl1");
+	controller.clk(clk);
+	controller.reconfig(reconfig);
+	controller.branchAddrIn(branchAddrIn);
+	controller.ready(ready);
+	controller.regAddr(regAddr);
+	controller.regData(regData);
+
+	sc_trace_file *fp;
+	fp = sc_create_vcd_trace_file("/home/hyq/workspace/501_proj_2/strct_ctrl.vcd");
+	sc_trace(fp, clk, "clock");
+	sc_trace(fp, reconfig, "reconfig");
+	sc_trace(fp, ready, "ready");
+	sc_trace(fp, branchAddrIn, "branch");
+	sc_trace(fp, regAddr, "regAddr");
+	sc_trace(fp, regData, "regData");
+
+	branchAddrIn.write(0);
+	reconfig.write(0);
+	sc_start(50, SC_NS);
+	reconfig.write(1);
+	sc_start(600, SC_NS);
+	sc_start(10, SC_NS);
+*/
+
+	// buffer controller test
+/*	sc_clock clk("clock", 10, SC_NS);
+	sc_signal<sc_uint<7> > regAddr;
+	sc_signal<sc_uint<6> > regData;
+	sc_signal<sc_biguint<20> > startReadWrite;
+	sc_signal<sc_uint<8> > dataInput[20], dataOutput[20];
+
+	BcCollection bcCollect("collection1");
+	for(int i = 0; i < 10; i++)
+	{
+		bcCollect.clk[i](clk);
+		(*bcCollect.dataInLeft[i])(dataInput[i]);
+		(*bcCollect.dataInRight[i])(dataInput[i + 10]);
+		(*bcCollect.dataOutLeft[i])(dataOutput[i]);
+		(*bcCollect.dataOutRight[i])(dataOutput[i + 10]);
+	}
+	bcCollect.startReadWrite(startReadWrite);
+	bcCollect.addrIn(regAddr);
+	bcCollect.dataIn(regData);
+
+	sc_trace_file *fp;
+	fp = sc_create_vcd_trace_file("/home/hyq/workspace/501_proj_2/bc_collection");
+	sc_trace(fp, clk, "clock");
+	sc_trace(fp, dataInput[0], "dataIn");
+	sc_trace(fp, dataOutput[0], "dataOut");
+	sc_trace(fp, regAddr, "regAddr");
+	sc_trace(fp, regData, "regData");
+	sc_trace(fp, startReadWrite, "read_write");
+	sc_trace(fp, regData, "regData");
+
+	startReadWrite.write(0);
+	for(int i = 0; i < 10; i++)
+	{
+		regAddr.write(40 + i);
+		regData.write(0);
+		sc_start(10, SC_NS);
+	}
+	for(int i = 0; i < 10; i++)
+	{
+		regAddr.write(50 + i);
+		regData.write(8);
+		sc_start(10, SC_NS);
+	}
+	regAddr.write(0);
+	regData.write(8);
+	sc_start(20, SC_NS);
+	startReadWrite.write(0b00000000010000000000);
+	for(int i = 0; i < 8; i++)
+	{
+		dataInput[0].write(i * 2 + 1);
+		sc_start(10, SC_NS);
+	}
+	sc_start(20, SC_NS);
+	startReadWrite.write(0b00000000000000000001);
+	sc_start(100, SC_NS);*/
+
+	// prc collection test
+/*	sc_clock clk("clock", 10, SC_NS);
+	sc_signal<sc_uint<7> > regAddr;
+	sc_signal<sc_uint<6> > regData;
+	sc_signal<sc_uint<8> > in0[10], in1[10], out0[10], out1[10];
+
+	PrcCollection collect1("prc_coll");
+	collect1.regAddr(regAddr);
+	collect1.regData(regData);
+
+	for(int i = 0; i < 10; i++)
+	{
+		collect1.clk[i](clk);
+		(*collect1.dataIn0[i])(in0[i]);
+		(*collect1.dataIn1[i])(in1[i]);
+		(*collect1.dataOut0[i])(out0[i]);
+		(*collect1.dataOut1[i])(out1[i]);
+	}
+
+	sc_trace_file *fp;
+	fp = sc_create_vcd_trace_file("/home/hyq/workspace/501_proj_2/prc_collection");
+	sc_trace(fp, clk, "clock");
+	sc_trace(fp, in0[0], "dataIn0");
+	sc_trace(fp, out0[0], "dataOut0");
+	sc_trace(fp, in1[0], "dataIn1");
+	sc_trace(fp, out1[0], "dataOut1");
+	sc_trace(fp, regAddr, "regAddr");
+	sc_trace(fp, regData, "regData");
+
+	for(int i = 0; i < 10; i++)
+	{
+		regAddr.write(60 + i);
+		regData.write(3);
+		sc_start(10, SC_NS);
+	}
+	regAddr.write(100);
+
+	for(int i = 0; i < 5; i++)
+	{
+		in0[0].write(i);
+		sc_start(10, SC_NS);
+	}
+
+	sc_start(30, SC_NS);
+
+	regAddr.write(60);
+	regData.write(35);
+	sc_start(10, SC_NS);
+	regAddr.write(100);
+	sc_start(20, SC_NS);
+
+	for(int i = 0; i < 5; i++)
+	{
+		in0[0].write(i);
+		in1[0].write(i + 1);
+		sc_start(10, SC_NS);
+	}
+	sc_start(40, SC_NS);*/
+
+	// exec controller test
+	sc_clock clk("clock", 10, SC_NS);
+	sc_signal<bool> reconfig;
+	sc_signal<sc_uint<3> > branchAddr;
+	sc_signal<bool> ready;
+	sc_signal<sc_biguint<20> > startReadWrite;
+
+	ExecCtrl exec1("exec");
+	exec1.clk(clk);
+	exec1.ready(ready);
+	exec1.reconfig(reconfig);
+	exec1.branchAddrOut(branchAddr);
+	exec1.startReadWrite(startReadWrite);
+
+	sc_trace_file *fp;
+	fp = sc_create_vcd_trace_file("/home/hyq/workspace/501_proj_2/exec_ctrl.vcd");
+	sc_trace(fp, clk, "clock");
+	sc_trace(fp, ready, "ready");
+	sc_trace(fp, reconfig, "reconfig");
+	sc_trace(fp, branchAddr, "branch");
+	sc_trace(fp, startReadWrite, "readWrite");
+
+	ready.write(1);
+	sc_start(60, SC_NS);
+	ready.write(0);
+	sc_start(20, SC_NS);
+	ready.write(1);
+	sc_start(40, SC_NS);
+
+	cout << "done!" << endl;
+	sc_close_vcd_trace_file(fp);
+
+	return 0;
+}

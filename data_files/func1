@@ -1,0 +1,2 @@
+outputData0.write(inputData0.read() + 1);
+outputData1.write(inputData0.read() + 1);
